@@ -1,0 +1,12 @@
+# directory
+.DS_Store
+__pycache__
+env
+twitter
+others
+
+# file
+config.py
+test.py
+test.R
+test.js
