@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import tweepy
 import pandas as pd
 from flask import Flask, render_template, request,\
     logging, Response, redirect, flash
-from config import CONFIG
+import config
 import os
 
 # 1. set Twitter key
