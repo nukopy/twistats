@@ -1,28 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from flask import Flask, render_template, request, logging, Response, redirect, flash
 import pandas as pd
-from flask import Flask, render_template, request,\
-    logging, Response, redirect, flash
-import config
 import os
+from agent import TwitterAPI
+import config
 
-# 1. set Twitter key
-CONSUMER_KEY = CONFIG['CONSUMER_KEY']
-CONSUMER_SECRET = CONFIG['CONSUMER_SECRET']
-ACCESS_TOKEN = CONFIG['ACCESS_TOKEN']
-ACCESS_SECRET = CONFIG['ACCESS_SECRET']
+# 1. make TwitterAPI instance
+api = TwitterAPI(consumer_key=config.CONSUMER_KEY,
+                 consumer_secret=config.CONSUMER_SECRET,
+                 access_token=config.ACCESS_TOKEN,
+                 access_secret=config.ACCESS_SECRET)
 
-# 2. get tweepy-api instance
-auth = tweepy.OAuthHandler(consumer_key=CONSUMER_KEY,
-                           consumer_secret=CONSUMER_SECRET)
-auth.set_access_token(key=ACCESS_TOKEN, secret=ACCESS_SECRET)
-api = tweepy.API(auth)
-
-# 3. get Flask instance
+# 2. make Flask instance
 app = Flask(__name__)
-
-# 4. list
 
 
 @app.route('/', methods=['GET', 'POST'])

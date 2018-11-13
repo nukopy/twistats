@@ -7,11 +7,11 @@ https://developer.twitter.com/en/docs/basics/cursoring
 cursor はページを行き来するための手段。
 ### time 1
 cursor -1 
-return 
+return
 
 cursorパラメータのデフォルト値は -1。
 cursorのパラメータが定められたHTTPリクエストのレスポンスは、
-以下を含む。 
+以下を含む。
 * previous_cursor
 * next_cursor
 * previous_cursor_str
@@ -28,4 +28,4 @@ dic.keys
 [Out]
 ['ids', 'next_cursor', 'next_cursor_str', 'previous_cursor', 'previous_cursor_str']
 
-着目すべきは next_cursor と previous_cursor の値 
+着目すべきは next_cursor と previous_cursor の値
