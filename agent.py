@@ -87,6 +87,7 @@ class TwitterAPI:
 
 
 if __name__ == '__main__':
+    # test
     api = TwitterAPI(consumer_key=config.CONSUMER_KEY,
                      consumer_secret=config.CONSUMER_SECRET,
                      access_token=config.ACCESS_TOKEN,
