@@ -1,10 +1,8 @@
 # directory
 .DS_Store
+.vscode
 __pycache__
-env
-twitter
 others
 
 # file
-config.py
-bot_tweet.py
+TwitterAPI/config.py
