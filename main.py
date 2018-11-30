@@ -4,8 +4,9 @@
 from flask import Flask, render_template, request, logging, Response, redirect, flash
 import pandas as pd
 import os
-from agent import TwitterAPI
-import config
+from twipy.api import TwitterAPI
+import twipy.config as config
+
 
 # 1. make TwitterAPI instance
 api = TwitterAPI(
@@ -26,11 +27,12 @@ columns = [
     'fav',
     'retweets'
 ]
+user_id = 'mathnuko'
 
 
 def get_tweets_df(user_id):
     tweets_df = pd.DataFrame(columns=columns)
-
+    response = api.user_timeline(user_id)
     return tweets_df
 
 

@@ -1,12 +1,12 @@
 from requests_oauthlib import OAuth1Session
 from datetime import datetime
-import sys
+import pandas as pd
 import json
 import random
 
 import twipy.config as config
 import twipy.printdecorator as printdecorator
-# sys.path.append('twipy')
+#import sys; sys.path.append('twipy')
 
 
 class TwitterAPI:
@@ -18,35 +18,69 @@ class TwitterAPI:
             resource_owner_key=access_token,
             resource_owner_secret=access_secret
         )
+
+        # response object
+        self.response = None
+        self.limit_response = None
+        self.resources = None  # limit resources: dic
+
+        # params
         self.search_params = self.set_search_params()
         self.home_timeline_params = self.set_home_timeline_params()
         self.user_timeline_params = self.set_user_timeline_params()
+        self.rate_limit_params = self.set_rate_limit_params()
+
+        # paging params
+        self.columns = [
+            'id',
+            'created_at',
+            'text',
+            'favorite_count',
+            'retweet_count'
+        ]
 
     # GET method
     # search
-    @printdecorator.print_status_code('GET')
+    @printdecorator.print_status_code(http_method='GET', api='search')
     def search_tweets(self) -> object:
         search_url = 'https://api.twitter.com/1.1/search/tweets.json'
         response = self.api.get(search_url, params=self.search_params)
+        self.rate_limit_status()  # get request limit
+        self.response = response
         return response
 
     # home_timeline
-    @printdecorator.print_status_code('GET')
+    @printdecorator.print_status_code(http_method='GET', api='home_timeline')
     def home_timeline(self) -> object:
         home_timeline_url = 'https://api.twitter.com/1.1/statuses/home_timeline.json'
         response = self.api.get(
             home_timeline_url, params=self.home_timeline_params
         )
+        self.rate_limit_status()  # get request limit
+        self.response = response
         return response
 
     # user_timeline
-    @printdecorator.print_status_code('GET')
+    @printdecorator.print_status_code(http_method='GET', api='user_timeline')
     def user_timeline(self) -> object:
         user_timeline_url = 'https://api.twitter.com/1.1/statuses/user_timeline.json'
         response = self.api.get(
             user_timeline_url, params=self.user_timeline_params
         )
+        self.rate_limit_status()  # get request limit
+        self.response = response
         return response
+
+    # rate_limit_status
+    @printdecorator.print_status_code(http_method='GET', api='rate_limit_status')
+    def rate_limit_status(self) -> object:
+        rate_limit_url = 'https://api.twitter.com/1.1/application/rate_limit_status.json'
+        limit_response = self.api.get(
+            rate_limit_url, params=self.rate_limit_params
+        )
+        self.limit_response = limit_response
+        self.resources = json.loads(limit_response.text)['resources']
+        return limit_response
 
     # set parameter
     # search params
@@ -59,8 +93,10 @@ class TwitterAPI:
             'q': query,
             'count': count
         }
+
         for key, value in kwargs.items():
             search_params[key] = value
+
         return search_params
 
     # home_timeline params
@@ -78,18 +114,35 @@ class TwitterAPI:
             'contributor_details': contributor_details,
             'include_entities': include_entities
         }
+
         for key, value in kwargs.items():
             home_timeline_params[key] = value
+
         return home_timeline_params
 
     # user_timeline params
     @printdecorator.print_params(param_name='user_timeline')
     def set_user_timeline_params(
-        self, screen_name='mathnuko', count=200, trim_user=True,
+        self, screen_name='never_be_a_pm', count=200, trim_user=True,
         exclude_replies=True, contributor_details=True, include_rts=True, **kwargs
     ) -> dict:
+        """set user_timeline parameters
+
+        Keyword Arguments:
+            screen_name {str} -- [description] (default: {'never_be_a_pm'})
+            count {int} -- [description] (default: {3200})
+            trim_user {bool} -- [description] (default: {True})
+            exclude_replies {bool} -- [description] (default: {True})
+            contributor_details {bool} -- [description] (default: {True})
+            include_rts {bool} -- [description] (default: {True})
+
+        allowed params: allowed_param:'id', 'user_id', 'screen_name', 'since_id', 'max_id', 'count', 'include_rts', 'trim_user', 'exclude_replies'
+
+        Returns:
+            dict -- [description]
+        """
+
         user_timeline_params = {
-            # 'user_id': '',
             # 'since_id': since_id,
             # 'max_id': max_id,
             'screen_name': screen_name,
@@ -98,9 +151,17 @@ class TwitterAPI:
             'trim_user': trim_user,
             'include_rts': True
         }
+
         for key, value in kwargs.items():
             user_timeline_params[key] = value
+
         return user_timeline_params
+
+    # rate_limit_status params
+    @printdecorator.print_params(param_name='rate_limit_status')
+    def set_rate_limit_params(self, resources='user,search,statuses') -> dict:
+        rate_limit_params = {'resources': resources}
+        return rate_limit_params
 
     # print GET result
     # print search result
