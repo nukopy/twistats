@@ -1,3 +1,4 @@
+# Twitter API
 from requests_oauthlib import OAuth1Session
 from datetime import datetime
 import pandas as pd
@@ -68,6 +69,17 @@ class TwitterAPI:
             user_timeline_url, params=self.user_timeline_params
         )
         self.rate_limit_status()  # get request limit
+        self.response = response
+        return response
+
+    # user/show
+    @printdecorator.print_status_code(http_method='GET', api='users/show')
+    def users_show(self, screen_name='never_be_a_pm') -> object:
+        users_show_url = 'https://api.twitter.com/1.1/users/show.json'
+        response = self.api.get(
+            users_show_url, params={'screen_name': screen_name}
+        )
+        self.rate_limit_status()
         self.response = response
         return response
 

@@ -1,0 +1,17 @@
+body {
+    background-color: #e6ecf0;
+}
+
+div {
+    line-height: 1.2;
+}
+
+.white-container {
+    border-bottom: 1px solid #e6ecf0;
+    background-color: #fff;
+}
+
+# !/usr/bin/env python # -*- coding: utf-8 -*- # Twitter config CONSUMER_KEY='5pVn0EoCRUKGCOmslJiDwCXFG'
+CONSUMER_SECRET='Hpew82Ccra3zqHp2C4g9ZYhlXdAEgRnb4YQ7k2E4eFtbcc0Jlj'
+ACCESS_TOKEN='972834194295439360-k9bayj8ORovc7eKOckdA1bvEw9RHmTm'
+ACCESS_SECRET='AvKfKdfSpjUju8jeYikBy4IhlQwo5jH3F0xx6sr3xep5w'

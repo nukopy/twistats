@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>TopTweets</title>
+    <link rel="stylesheet" href="../static/css/stylesheet.css">
 
     <!-- ここがBootstrapのCDN -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
@@ -42,15 +43,29 @@
                 </div>
             </div>
         </div>
+
         <!-- row-2 chart -->
         <div class="row">
-            <h2>row</h2>
+
         </div>
+
         <!-- row-3 profile(md-4) & list(md-8) -->
         <div class="row">
-            <h2>row</h2>
             <div class="col-md-4">
-                <h2>col4</h2>
+                {{% if profile %}}
+                <div class="white-container">
+                    <div>
+                        <img src="{{ profile.image }}" width="100px"><br />
+                        <a href="https://twitter.com/{{ profile.user_id }}">@{{ profile.user_id }}</a><br />
+                        follow: {{ profile.friends_count }} <br />
+                        followers: {{ profile.followers_count }}
+                    </div>
+                    <div>
+                        {{ profile.description }} <br />
+                        <a href="{{ profile.expanded_url }}">{{ profile.user_id }}'s page</a>
+                    </div>
+                </div>
+                {{% endif %}}
             </div>
             <div class="col-md-8">
                 <h2>col8</h2>
