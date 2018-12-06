@@ -55,7 +55,7 @@
                 <div class="top">
                     <!-- title-container -->
                     <div class="title-container">
-                        <h1 style="font-size: 45px;"><a href="/">TwiStats</a></h1>
+                        <h1 style="font-size: 42.5px;"><a href="/">TwiStats</a></h1>
                         <p style="font-size: 18px;">Enter Twitter ID you wanna check!</p>
                     </div>
                     <!-- form-container -->
@@ -72,7 +72,7 @@
                                         value="" placeholder="Enter Twitter ID here">
                                     {% endif %}
                                 </div>
-                                <button type="submit" class="btn btn-primary">GET</button>
+                                <button type="submit" class="btn btn-primary"><span style="font-weight: bold;">GET</span></button>
                             </label>
                         </form>
                     </div>
@@ -92,78 +92,83 @@
         <div class="row">
             {% if profile %}
             <!-- profile -->
-            <div class="col-lg-3 col-md-4 col-sm-8 col-xs-12">
-                <div class="profile-container">
-                    <div id="user-info">
-                        <img id="user_img" src="{{ profile.image }}" width="60px">
-                        <div id="name-id">
-                            <span id="name">{{ profile.name }}</span> <br>
-                            <a id="id" href="https://twitter.com/{{ profile.user_id }}" target="_blank">
-                                @{{profile.user_id }}
-                            </a>
+            <div class="col-lg-3 col-md-4 col-sm-12 col-xs-8">
+                <div class="row">
+                    <div class="col-md-12 col-sm-6">
+                        <div id="user-info">
+                            <img id="user_img" src="{{ profile.image }}" width="60px">
+                            <div id="name-id">
+                                <span id="name">{{ profile.name }}</span> <br>
+                                <a id="id" href="https://twitter.com/{{ profile.user_id }}" target="_blank">
+                                    @{{profile.user_id }}
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                    <div id="ff-summary">
-                        <div class="ff">
-                            <span class="ff-text">Following</span><br />
-                            <span class="ff-num">{{ profile.friends_count }}</span>
+                        <div class="row" id="ff-summary">
+                            <div class="col-md-6 col-xs-4 ff">
+                                <span class="ff-text">Following</span><br />
+                                <span class="ff-num">{{ profile.friends_count }}</span>
+                            </div>
+                            <div class="col-md-6 col-xs-4 ff">
+                                <span class="ff-text">Followers</span><br />
+                                <span class="ff-num">{{ profile.followers_count }}</span>
+                            </div>
                         </div>
-                        <div class="ff">
-                            <span class="ff-text">Followers</span><br />
-                            <span class="ff-num">{{ profile.followers_count }}</span>
+                        <div id="description">
+                            {{ profile.description }} <br />
+                            {% if profile.expanded_url %}
+                            <i class="fas fa-link" style="color: #98a0a5;"> </i>
+                            <a href="{{ profile.expanded_url }}" target="_blank">{{ profile.user_id }}'s WEB page</a>
+                            {% endif %}
                         </div>
-                    </div>
-                    <div id="description">
-                        {{ profile.description }} <br />
-                        {% if profile.expanded_url %}
-                        <i class="fas fa-link" style="color: #98a0a5;"> </i>
-                        <a href="{{ profile.expanded_url }}" target="_blank">{{ profile.user_id }}'s WEB page</a>
-                        {% endif %}
                     </div>
                     <!-- summary table -->
-                    {% if summary %}
-                    <div class="summary">
-                        <h4>{{ profile.user_id }}'s Stats</h4>
-                        <span>Period: {{ day_grouped_df.index.min() }} ~ {{ day_grouped_df.index.max()}}</span><br />
-                        <span>Target: {{ sorted_df.shape[0] }} tweets</span>
-                        <!-- per Tweet -->
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Stats</th>
-                                    <th scope="col"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <th scope="row">Most Favorited / Tweet</th>
-                                    <td>{{ summary['max_fav'] }}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Most Retweeted / Tweet</th>
-                                    <td>{{ summary['max_rt'] }}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="col">Tweets / day</th>
-                                    <td>{{ summary['ave_tweets'] | round(1, 'floor') }}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="col">Max Tweets / day</th>
-                                    <td>{{ summary['max_tweets'] }}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="col">Most Tweeted on (weekday)</th>
-                                    <td>{{ summary['weekday'] }}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="col">Most Tweeted at (24h-clock)</th>
-                                    <td>{{ summary['period'] }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="col-md-12 col-sm-6">
+                        <div class="summary">
+                            <h4>{{ profile.user_id }}'s Stats</h4>
+                            <span>Period: {{ day_grouped_df.index.min() }} ~ {{ day_grouped_df.index.max()}}</span><br />
+                            <span>Target: {{ sorted_df.shape[0] }} tweets</span>
+                            <!-- per Tweet -->
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Stats</th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">Most Favorited / Tweet</th>
+                                        <td>{{ summary['max_fav'] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Most Retweeted / Tweet</th>
+                                        <td>{{ summary['max_rt'] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col">Tweets / day</th>
+                                        <td>{{ summary['ave_tweets'] | round(1, 'floor') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col">Max Tweets / day</th>
+                                        <td>{{ summary['max_tweets'] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col">Most Tweeted on (weekday)</th>
+                                        <td>{{ summary['weekday'] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col">Most Tweeted at (24h-clock)</th>
+                                        <td>{{ summary['period'] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col">Characters / Tweet (not include URL)</th>
+                                        <td>{{ summary['length'] | round(1, 'floor') }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    {% endif %}
-
                 </div>
             </div>
 
@@ -173,8 +178,17 @@
                 {{ script | safe }}
                 {{ div | safe }}
                 {% endif %}
-                <a href="/tweets_csv">tweets</a>
-                <a href="/day_grouped_csv">day_grouped</a>
+                <!-- download -->
+                <div class="dropdown pull-right download">
+                    <button class="btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                        <span style="font-weight: bold;">Download CSV</span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="/tweets_csv">individual tweets data</a></li>
+                        <li><a href="/day_grouped_csv">day-grouped data</a></li>
+                    </ul>
+                </div>
             </div>
 
             <!-- list(col-md-8) -->
@@ -184,19 +198,21 @@
                         <span class="list-title">{{ sorted_df.shape[0] }} Tweets sorted by Favorite</span>
                     </div>
                     <div class="tweets-list">
-                        {% for index, row in sorted_df.iterrows() %}
-                        <div class="white-container">
-                            <div id="tweet-text">{{ row.text }}</div>
-                            <div id="date">{{ row.created_at | dt_filter }}</div>
-                            <div class="icons">
-                                <span class="fav"><i class="fas fa-heart icon"></i>{{ row.favorite_count }} </span>
-                                <span class="rt"> <i class="fas fa-retweet icon"></i>{{ row.retweet_count }}</span>
-                                <a href="https://twitter.com/{{ profile.user_id }}/status/{{ row.id }}" target="_blank"
-                                    class="pull-right">View Tweet</a>
-                            </div>
-                        </div>
-                        {% endfor %}
-
+                        <ul>
+                            {% for index, row in sorted_df.iterrows() %}
+                            <li class="white-container">
+                                <div id="tweet-text">{{ row.text }}</div>
+                                <div id="date">{{ row.created_at | dt_filter }}</div>
+                                <div class="icons">
+                                    <span class="fav"><i class="fas fa-heart icon"></i>{{ row.favorite_count }}
+                                    </span>
+                                    <span class="rt"> <i class="fas fa-retweet icon"></i>{{ row.retweet_count }}</span>
+                                    <a href="https://twitter.com/{{ profile.user_id }}/status/{{ row.id }}" target="_blank"
+                                        class="pull-right">View Tweet</a>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 </div>
             </div>

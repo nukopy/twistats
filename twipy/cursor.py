@@ -1,4 +1,4 @@
-# Cursor object (for TopTweets)
+# Cursor object (for TwiStats)
 from configparser import ConfigParser
 from datetime import datetime
 from bokeh.models import ColumnDataSource, Title, LinearAxis, Range1d
@@ -6,13 +6,13 @@ from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.models.tickers import FixedTicker
 import pandas as pd
+import os
 import json
 
 from twipy.api import TwitterAPI
-import twipy.config as config
 
 
-class TopTweets(TwitterAPI):
+class Cursor(TwitterAPI):
     """ Pagination helper class for TopTweets application"""
 
     def __init__(self, consumer_key, consumer_secret, access_token, access_secret):
@@ -48,7 +48,7 @@ class TopTweets(TwitterAPI):
     def get_tweets_df(self, screen_name='never_be_a_pm', num_tweets=1000):
         """allowed_param: 'id', 'user_id', 'screen_name', 'since_id', 'max_id', 'count', 'include_rts', 'trim_user', 'exclude_replies'"""
         # constant
-        tweet_df = pd.DataFrame(columns=self.columns)
+        tweets_df = pd.DataFrame(columns=self.columns)
         resources_key = '/statuses/user_timeline'
         loop = int(num_tweets / 200)  # 200 = tweets numbers per request
 
@@ -73,7 +73,7 @@ class TopTweets(TwitterAPI):
                         ],
                             index=self.columns,
                         )
-                        tweet_df = tweet_df.append(se, ignore_index=True)
+                        tweets_df = tweets_df.append(se, ignore_index=True)
                     else:
                         continue
 
@@ -95,10 +95,14 @@ class TopTweets(TwitterAPI):
                 )
                 break
 
-        # cast to datetime
-        tweet_df['created_at'] = pd.to_datetime(tweet_df['created_at'])
-        self.tweets_df = tweet_df
-        return tweet_df
+        # cast
+        tweets_df['created_at'] = pd.to_datetime(tweets_df['created_at'])
+        tweets_df['id'] = tweets_df['id'].astype(int)
+        tweets_df['favorite_count'] = tweets_df['favorite_count'].astype(int)
+        tweets_df['retweet_count'] = tweets_df['retweet_count'].astype(int)
+
+        self.tweets_df = tweets_df
+        return tweets_df
 
     def get_day_grouped_df(self):
         """
@@ -108,6 +112,7 @@ class TopTweets(TwitterAPI):
         day_grouped = self.tweets_df.groupby(
             self.tweets_df.created_at.dt.date
         )  # CAUTION: also occur tweet-'id' summation
+
         day_grouped_df = day_grouped.sum()
         day_grouped_df['tweets_per_day'] = day_grouped.size()
         self.day_grouped_df = day_grouped_df
@@ -275,27 +280,14 @@ class TopTweets(TwitterAPI):
 
 
 if __name__ == "__main__":
-    # get config
-    config = ConfigParser()
-    config.read('config.ini')
-    section = 'OAuth'
-    CK = config.get(section, 'CONSUMER_KEY')
-    CS = config.get(section, 'CONSUMER_SECRET')
-    AT = config.get(section, 'ACCESS_TOKEN')
-    AS = config.get(section, 'ACCESS_SECRET')
-
-    # test
-    api = TopTweets(
-        consumer_key=CK,
-        consumer_secret=CS,
-        access_token=AT,
-        access_secret=AS
+    api = Cursor(
+        consumer_key=os.environ['TW_CONSUMER_KEY'],
+        consumer_secret=os.environ['TW_CONSUMER_SECRET'],
+        access_token=os.environ['TW_ACCESS_TOKEN'],
+        access_secret=os.environ['TW_ACCESS_SECRET'],
     )
 
     df = api.get_tweets_df(screen_name='mathnuko')
-    df.created_at.dt.weedday_name
-    pd.value_counts(df.created_at.dt.weekday)
-    pd.value_counts(df.created_at.dt.hour)
-    # user = api.get_profile()
+    user = api.get_profile()
     day_grouped_df = api.get_day_grouped_df()
     # fav_rt_sorted_df = api.get_fav_rt_sorted_df()

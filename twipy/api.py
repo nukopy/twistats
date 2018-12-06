@@ -1,15 +1,13 @@
 # Twitter API
 from requests_oauthlib import OAuth1Session
-from configparser import ConfigParser
 from datetime import datetime
 import pandas as pd
+import os
 import json
 import random
 
-
-import twipy.config as config
-import twipy.printdecorator as printdecorator
-#import sys; sys.path.append('twipy')
+# twipy
+from twipy import printdecorator
 
 
 class TwitterAPI:
@@ -237,32 +235,17 @@ class TwitterAPI:
         else:  # tweet failed
             print('Tweet Failed. : {}'.format(response.status_code))
 
-    # others
-    def limit(self):
-        limit = res.headers['x-rate-limit-remaining']  # リクエスト可能残数の取得
-        reset = res.headers['x-rate-limit-reset']  # リクエスト叶残数リセットまでの時間(UTC)
-        # sec = int(res.headers['X-Rate-Limit-Reset']) - time.mktime(datetime.now().timetuple()) #UTCを秒数に変換
-
 
 if __name__ == '__main__':
-    # get config
-    config = ConfigParser()
-    config.read('config.ini')
-    section = 'OAuth'
-    CK = config.get(section, 'CONSUMER_KEY')
-    CS = config.get(section, 'CONSUMER_SECRET')
-    AT = config.get(section, 'ACCESS_TOKEN')
-    AS = config.get(section, 'ACCESS_SECRET')
-
-    # test
     api = TwitterAPI(
-        consumer_key=CK,
-        consumer_secret=CS,
-        access_token=AT,
-        access_secret=AS
+        consumer_key=os.environ['TW_CONSUMER_KEY'],
+        consumer_secret=os.environ['TW_CONSUMER_SECRET'],
+        access_token=os.environ['TW_ACCESS_TOKEN'],
+        access_secret=os.environ['TW_ACCESS_SECRET'],
     )
 
     # api.search_tweets()
     # api.home_timeline()
-    res = api.user_timeline()
     # api.tweet(tw_sentence='私は会社に行きたくないです')# api.tweet(tw_sentence='私は会社に行きたくないです')
+    tweets = api.user_timeline()  # list
+    tweet = tweets[0]  # dict
