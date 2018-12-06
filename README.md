@@ -1,4 +1,4 @@
-# TopTweets
+# TwiStats
 This repository is a tutorial for Twitter REST API.
 
 You may use Git to clone the repository from GitHub and install it manually: 
