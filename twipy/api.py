@@ -1,9 +1,11 @@
 # Twitter API
 from requests_oauthlib import OAuth1Session
+from configparser import ConfigParser
 from datetime import datetime
 import pandas as pd
 import json
 import random
+
 
 import twipy.config as config
 import twipy.printdecorator as printdecorator
@@ -20,7 +22,7 @@ class TwitterAPI:
             resource_owner_secret=access_secret
         )
 
-        # response object
+        # response object(MUST USE after request method)
         self.response = None
         self.limit_response = None
         self.resources = None  # limit resources: dic
@@ -30,15 +32,6 @@ class TwitterAPI:
         self.home_timeline_params = self.set_home_timeline_params()
         self.user_timeline_params = self.set_user_timeline_params()
         self.rate_limit_params = self.set_rate_limit_params()
-
-        # paging params
-        self.columns = [
-            'id',
-            'created_at',
-            'text',
-            'favorite_count',
-            'retweet_count'
-        ]
 
     # GET method
     # search
@@ -109,6 +102,7 @@ class TwitterAPI:
         for key, value in kwargs.items():
             search_params[key] = value
 
+        self.search_params = search_params
         return search_params
 
     # home_timeline params
@@ -130,6 +124,7 @@ class TwitterAPI:
         for key, value in kwargs.items():
             home_timeline_params[key] = value
 
+        self.home_timeline_params = home_timeline_params
         return home_timeline_params
 
     # user_timeline params
@@ -139,19 +134,8 @@ class TwitterAPI:
         exclude_replies=True, contributor_details=True, include_rts=True, **kwargs
     ) -> dict:
         """set user_timeline parameters
-
-        Keyword Arguments:
-            screen_name {str} -- [description] (default: {'never_be_a_pm'})
-            count {int} -- [description] (default: {3200})
-            trim_user {bool} -- [description] (default: {True})
-            exclude_replies {bool} -- [description] (default: {True})
-            contributor_details {bool} -- [description] (default: {True})
-            include_rts {bool} -- [description] (default: {True})
-
-        allowed params: allowed_param:'id', 'user_id', 'screen_name', 'since_id', 'max_id', 'count', 'include_rts', 'trim_user', 'exclude_replies'
-
-        Returns:
-            dict -- [description]
+        reference: https: // dev.twitter.com/rest/reference/get/statuses/user_timeline
+        allowed_param: 'id', 'user_id', 'screen_name', 'since_id', 'max_id', 'count', 'include_rts', 'trim_user', 'exclude_replies'
         """
 
         user_timeline_params = {
@@ -167,12 +151,14 @@ class TwitterAPI:
         for key, value in kwargs.items():
             user_timeline_params[key] = value
 
+        self.user_timeline_params = user_timeline_params
         return user_timeline_params
 
     # rate_limit_status params
     @printdecorator.print_params(param_name='rate_limit_status')
     def set_rate_limit_params(self, resources='user,search,statuses') -> dict:
         rate_limit_params = {'resources': resources}
+        self.rate_limit_params = rate_limit_params
         return rate_limit_params
 
     # print GET result
@@ -259,12 +245,21 @@ class TwitterAPI:
 
 
 if __name__ == '__main__':
+    # get config
+    config = ConfigParser()
+    config.read('config.ini')
+    section = 'OAuth'
+    CK = config.get(section, 'CONSUMER_KEY')
+    CS = config.get(section, 'CONSUMER_SECRET')
+    AT = config.get(section, 'ACCESS_TOKEN')
+    AS = config.get(section, 'ACCESS_SECRET')
+
     # test
     api = TwitterAPI(
-        consumer_key=config.CONSUMER_KEY,
-        consumer_secret=config.CONSUMER_SECRET,
-        access_token=config.ACCESS_TOKEN,
-        access_secret=config.ACCESS_SECRET
+        consumer_key=CK,
+        consumer_secret=CS,
+        access_token=AT,
+        access_secret=AS
     )
 
     # api.search_tweets()

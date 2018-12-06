@@ -5,4 +5,5 @@ __pycache__
 others
 
 # file
-twipy/config.py
+config.py
+config.ini
