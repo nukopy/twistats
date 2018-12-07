@@ -16,10 +16,6 @@
     <link href="http://cdn.pydata.org/bokeh/release/bokeh-1.0.2.min.css" rel="stylesheet" type="text/css">
     <link href="http://cdn.pydata.org/bokeh/release/bokeh-widgets-1.0.2.min.css" rel="stylesheet" type="text/css">
     <link href="http://cdn.pydata.org/bokeh/release/bokeh-tables-1.0.2.min.css" rel="stylesheet" type="text/css">
-    <!-- BokehJS script -->
-    <script src="http://cdn.pydata.org/bokeh/release/bokeh-1.0.2.min.js"></script>
-    <script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-1.0.2.min.js"></script>
-    <script src="http://cdn.pydata.org/bokeh/release/bokeh-tables-1.0.2.min.js"></script>
 
     <!-- fontawesome -->
     <link rel="stylesheet" href="{{ url_for('static', filename='fontawesome-free-5.5.0-web/css/all.css') }}">
@@ -49,52 +45,57 @@
 
 <body>
     <div class="container-fluid">
-        <!-- row-1 top -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="top">
-                    <!-- title-container -->
-                    <div class="title-container">
-                        <h1 style="font-size: 42.5px;"><a href="/">TwiStats</a></h1>
-                        <p style="font-size: 18px;">Enter Twitter ID you wanna check!</p>
-                    </div>
-                    <!-- form-container -->
-                    <div class="form-container">
-                        <form class="form-inline" method="post">
-                            <label>
-                                <div class="input-group">
-                                    <span class="input-group-addon">@</span>
-                                    {% if user_id %}
-                                    <input name="user_id" class="form-control" style="font-size: 18px;" type="text"
-                                        value="{{ user_id }}" placeholder="Please enter Twitter ID">
-                                    {% else %}
-                                    <input name="user_id" class="form-control" style="font-size: 15px;" type="text"
-                                        value="" placeholder="Enter Twitter ID here">
-                                    {% endif %}
-                                </div>
-                                <button type="submit" class="btn btn-primary"><span style="font-weight: bold;">GET</span></button>
-                            </label>
-                        </form>
-                    </div>
-                    <p style="font-size: 18px;">
-                        Your search ID:
-                        {% if error_msg %}
-                        <span style="color: red;">{{ error_msg }}</span>
-                        {% else %}
-                        <span>{{ user_id }} {{ not_found }}</span>
-                        {% endif %}
-                    </p>
+    </div>
+    <!-- row-1 top -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="top">
+                <!-- title-container -->
+                <div class="title-container">
+                    <h1 style="font-size: 42.5px;"><a href="/">TwiStats</a></h1>
+                    <p style="font-size: 18px;">Enter Twitter ID you wanna check!</p>
                 </div>
+                <!-- form-container -->
+                <div class="form-container">
+                    <form class="form-inline" method="post">
+                        <label>
+                            <div class="input-group">
+                                <span class="input-group-addon">@</span>
+                                {% if user_id %}
+                                <input name="user_id" class="form-control" style="font-size: 16px; width: 200px;" type="text"
+                                    value="{{ user_id }}" placeholder="Please enter Twitter ID">
+                                {% else %}
+                                <input name="user_id" class="form-control" style="font-size: 16px; width: 200px;" type="text"
+                                    value="" placeholder="Enter Twitter ID here">
+                                {% endif %}
+                                <!-- <span style="display: inline-block; padding-left: 10px;"> </span> -->
+                                <button type="submit" class="btn btn-primary"><span style="font-weight: bold; display: inline-block;">GET</span></button>
+                            </div>
+                        </label>
+                    </form>
+                </div>
+
+                <p style="font-size: 18px;">
+                    Your search ID:
+                    {% if error_msg %}
+                    <span style="color: red;">{{ error_msg }}</span>
+                    {% else %}
+                    <span>{{ user_id }} {{ not_found }}</span>
+                    {% endif %}
+                </p>
             </div>
         </div>
+    </div>
 
-        <!-- row-3 profile(col-md-4) & list(col-md-8) -->
-        <div class="row">
+    <!-- row-3 profile(col-md-4) & list(col-md-8) -->
+
+    <div class="row">
+        <div id="all">
             {% if profile %}
             <!-- profile -->
-            <div class="col-lg-3 col-md-4 col-sm-12 col-xs-8">
+            <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
                 <div class="row">
-                    <div class="col-md-12 col-sm-6">
+                    <div class="col-md-12 col-sm-6 col-xs-12">
                         <div id="user-info">
                             <img id="user_img" src="{{ profile.image }}" width="60px">
                             <div id="name-id">
@@ -105,25 +106,28 @@
                             </div>
                         </div>
                         <div class="row" id="ff-summary">
-                            <div class="col-md-6 col-xs-4 ff">
+                            <div class="col-md-4 col-xs-2 ff">
                                 <span class="ff-text">Following</span><br />
                                 <span class="ff-num">{{ profile.friends_count }}</span>
                             </div>
-                            <div class="col-md-6 col-xs-4 ff">
+                            <div class="col-md-4 col-xs-2 ff">
                                 <span class="ff-text">Followers</span><br />
                                 <span class="ff-num">{{ profile.followers_count }}</span>
                             </div>
                         </div>
-                        <div id="description">
-                            {{ profile.description }} <br />
-                            {% if profile.expanded_url %}
-                            <i class="fas fa-link" style="color: #98a0a5;"> </i>
-                            <a href="{{ profile.expanded_url }}" target="_blank">{{ profile.user_id }}'s WEB page</a>
-                            {% endif %}
+                        <div class="row">
+                            <div id="description" class="col-md-12 col-sm-12 col-xs-6">
+                                {{ profile.description }} <br />
+                                {% if profile.expanded_url %}
+                                <i class="fas fa-link" style="color: #98a0a5;"> </i>
+                                <a href="{{ profile.expanded_url }}" target="_blank">{{ profile.user_id }}'s WEB
+                                    page</a>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                     <!-- summary table -->
-                    <div class="col-md-12 col-sm-6">
+                    <div class="col-md-12 col-sm-6 col-xs-12">
                         <div class="summary">
                             <h4>{{ profile.user_id }}'s Stats</h4>
                             <span>Period: {{ day_grouped_df.index.min() }} ~ {{ day_grouped_df.index.max()}}</span><br />
@@ -172,6 +176,7 @@
                 </div>
             </div>
 
+
             <!-- chart -->
             <div class="col-lg-9 col-md-8 col-sm-12 col-xs-12" id="chart">
                 {% if script %}
@@ -195,21 +200,45 @@
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 list">
                 <div class="center-block">
                     <div>
-                        <span class="list-title">{{ sorted_df.shape[0] }} Tweets sorted by Favorite</span>
+                        <span class="list-title">{{ sorted_df.shape[0] }} Tweets sorted by</span>
                     </div>
-                    <div class="tweets-list">
-                        <ul>
+                    <div id="tweets-list">
+                        <div class="fixed">
+                            <input id="keyword" class="search" placeholder=" Search Tweets" oninput="num_search()"
+                                style="padding: 3px 0; margin-top: 1px; margin-bottom: 3px; border-radius: 5px; font-size: 16px;" />
+                            <span style="font-size: 16px;"> Hit Tweets: </span><span id="num-search"></span>
+                            <div class="btn-group pull-left" role="group" aria-label="sort-button" style="padding-right: 10px;">
+                                <button type="button" class="sort btn-primary btn" data-sort="fav" style="font-weight: bold;">
+                                    <span>Favorite</span>
+                                </button>
+                                <button type="button" class="sort btn-primary btn" data-sort="rt" style="font-weight: bold;">
+                                    <span>Retweet</span>
+                                </button>
+                                <button type="button" class="sort btn-primary btn" data-sort="datehide" style="font-weight: bold;">
+                                    <span>Date</span>
+                                </button>
+                            </div>
+                        </div>
+                        <ul class="list">
                             {% for index, row in sorted_df.iterrows() %}
-                            <li class="white-container">
-                                <div id="tweet-text">{{ row.text }}</div>
-                                <div id="date">{{ row.created_at | dt_filter }}</div>
-                                <div class="icons">
-                                    <span class="fav"><i class="fas fa-heart icon"></i>{{ row.favorite_count }}
-                                    </span>
-                                    <span class="rt"> <i class="fas fa-retweet icon"></i>{{ row.retweet_count }}</span>
-                                    <a href="https://twitter.com/{{ profile.user_id }}/status/{{ row.id }}" target="_blank"
-                                        class="pull-right">View Tweet</a>
+                            <li class="white-container" data-id="{{ index }}">
+                                <div class="tweet-text">
+                                    {{ row.text }}
                                 </div>
+                                <div class="date">
+                                    {{ row.created_at | dt_filter }}
+                                </div>
+                                <div class="datehide hide">
+                                    {{ row.created_at.timestamp() | int }}
+                                </div>
+                                <span class="fav">
+                                    <i class="fas fa-heart icon"></i>{{ row.favorite_count }}
+                                </span>
+                                <span class="rt">
+                                    <i class="fas fa-retweet icon"></i>{{ row.retweet_count }}
+                                </span>
+                                <a href="https://twitter.com/{{ profile.user_id }}/status/{{ row.id }}" target="_blank"
+                                    class="pull-right">View Tweet</a>
                             </li>
                             {% endfor %}
                         </ul>
@@ -218,24 +247,52 @@
             </div>
             {% endif %}
         </div>
+    </div>
 
-        <!-- footer -->
-        <div class="row">
-            <div class="col-md-12 col-xs-12 footer">
-                <span id="footer-text">Created by @mathnuko</span>
-                <span class="twitter footer-icon">
-                    <a href="https://twitter.com/mathnuko" target="_blank"><i class="fab fa-twitter fa-2x"></i></a>
-                </span>
-                <span class="github footer-icon">
-                    <a href="https://github.com/nukopy" target="_blank"> <i class="fab fa-github fa-2x"></i></a>
-                </span>
-            </div>
+    <!-- footer -->
+    <div class="row">
+        <div class="col-md-12 col-xs-12 footer">
+            <span id="footer-text">Created by <a href="https://twitter.com/mathnuko" style="color: inherit;">@mathnuko</a></span>
+            <span class="twitter footer-icon">
+                <a href="https://twitter.com/mathnuko" target="_blank"><i class="fab fa-twitter fa-2x"></i></a>
+            </span>
+            <span class="github footer-icon">
+                <a href="https://github.com/nukopy" target="_blank"> <i class="fab fa-github fa-2x"></i></a>
+            </span>
         </div>
     </div>
 
+    <!-- CDNs -->
     <!-- Bootstrap CDN -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+
+    <!-- BokehJS script -->
+    <script src="http://cdn.pydata.org/bokeh/release/bokeh-1.0.2.min.js"></script>
+    <script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-1.0.2.min.js"></script>
+    <script src="http://cdn.pydata.org/bokeh/release/bokeh-tables-1.0.2.min.js"></script>
+
+    <!-- List.js -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script>
+        let options = {
+            valueNames: [
+                'tweet-text',
+                'datehide',
+                'fav',
+                'rt',
+                {
+                    data: ['id']
+                }
+            ]
+        };
+        let tweet_list = new List('tweets-list', options);
+
+        let num_search = () => {
+            keyword = document.getElementById('keyword').value
+            document.getElementById('num-search').textContent = tweet_list.search(keyword).length;
+        };
+    </script>
 </body>
 
 </html>

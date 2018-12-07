@@ -1,11 +1,12 @@
 # Cursor object (for TwiStats)
 from configparser import ConfigParser
 from datetime import datetime
-from bokeh.models import ColumnDataSource, Title, LinearAxis, Range1d
+from bokeh.models import ColumnDataSource, Title, LinearAxis, Range1d, HoverTool
 from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.models.tickers import FixedTicker
 import pandas as pd
+import html.parser
 import os
 import json
 
@@ -67,7 +68,8 @@ class Cursor(TwitterAPI):
                         se = pd.Series([
                             tweet['id'],
                             tweet['created_at'],
-                            tweet['text'].replace('\n', ' '),
+                            html.parser.HTMLParser().unescape(
+                                tweet['text'].replace('\n', ' ')),
                             tweet['favorite_count'],
                             tweet['retweet_count'],
                         ],
@@ -77,7 +79,7 @@ class Cursor(TwitterAPI):
                     else:
                         continue
 
-                # pagination: last tweet-id - 1 is next max_id
+                # pagination: last tweet-id - 1 is next max_id;
                 max_id = tweets[-1]['id'] - 1
                 self.user_timeline_params['max_id'] = max_id
 
@@ -163,23 +165,29 @@ class Cursor(TwitterAPI):
         # select the tools we want
         TOOLS = ['pan', 'wheel_zoom', 'box_zoom', 'reset', 'save']  # 'hover'
         TOOLTIPS = """
-            <div style="font-weight: bold;">Day Stats</div>
+        
+            <div style="font-weight: bold;">@date{%y/%m/%d}</div>
             <div>
-                <span style="color: #e0245e; font-weight: bold;"><i class="fas fa-heart icon"></i> <span class="pull-right">@favorite{0}<span></span>
+                <span style="color: #e0245e; font-weight: bold;"><i class="fas fa-heart"></i> <span class="pull-right">@favorite{0}<span></span>
             </div>
             <div>
-                <span style="color: #17bf63; font-weight: bold;"><i class="fas fa-retweet icon"></i> <span class="pull-right">@retweet{0}<span></span>
+                <span style="color: #17bf63; font-weight: bold;"><i class="fas fa-retweet"></i> <span class="pull-right">@retweet{0}<span></span>
             </div>
             <div>
-                <span style="color: #1da1f2; font-weight: bold;"><i class="fab fa-twitter icon"></i> <span class="pull-right">@tweets{0}<span></span>
+                <span style="color: #1da1f2; font-weight: bold;"><i class="fab fa-twitter"></i> <span class="pull-right">@tweets{0}<span></span>
             </div>
         """
 
         # prepare fig
         fig = figure(
             plot_width=800, plot_height=600, sizing_mode='scale_width',
-            x_axis_type='datetime', tools=TOOLS, tooltips=TOOLTIPS
+            x_axis_type='datetime', tools=TOOLS
         )
+        hover = HoverTool(
+            tooltips=TOOLTIPS,
+            formatters={'date': 'datetime'}
+        )
+        fig.add_tools(hover)
 
         # title
         background_color = '#e6ecf0'  # #c0cad1'
@@ -195,7 +203,7 @@ class Cursor(TwitterAPI):
         # Axis
         fig.xaxis.axis_label = 'Date'
         fig.yaxis.axis_label = 'Favorite & Retweet'
-        fig.xaxis.major_label_orientation = 1.1
+        fig.xaxis.major_label_orientation = 0.8
         # second axis
         # Setting the second y axis range name and range
         fig.extra_y_ranges = {"tweets": Range1d(
@@ -205,8 +213,10 @@ class Cursor(TwitterAPI):
             LinearAxis(y_range_name="tweets", axis_label='Tweets'),
             'right'
         )
-        fig.xaxis.axis_label_text_font_size = "15px"
-        fig.yaxis.axis_label_text_font_size = "15px"
+        fig.xaxis.axis_label_text_font_size = '17px'
+        fig.xaxis.major_label_text_font_size = '15px'
+        fig.yaxis.axis_label_text_font_size = '17px'
+        fig.yaxis.major_label_text_font_size = '15px'
 
         # Grid
         fig.xgrid.grid_line_color = '#98a0a5'

@@ -11,10 +11,14 @@ li {
 /* container */
 /* top */
 .top {
-    padding-left: 20px;
+    padding-left: 30px;
 }
 
 /* profile */
+#all {
+    padding: 0 30px;
+}
+
 #user-info {
     display: flex;
     display: -webkit-flex;
@@ -23,6 +27,7 @@ li {
     /* 縦方向中央揃え */
     align-items: center;
     padding-left: 10px;
+    padding-top: 27.5px;
 }
 
 #user_img {
@@ -69,10 +74,6 @@ li {
     font-weight: bold;
 }
 
-#description {
-    padding: 2.5px 10px 2.5px 2.5px;
-}
-
 .summary {
     padding-top: 10px;
 }
@@ -80,8 +81,8 @@ li {
 #chart {
     padding-top: 10px;
     padding-bottom: 15px;
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: 10px;
+    padding-right: 7.5px;
 }
 
 .download {
@@ -101,18 +102,30 @@ li {
 .list-title {
     color: #657786;
     display: inline-block;
-    font-size: 15px;
+    font-size: 18px;
     font-weight: bold;
-    padding: 10px 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 17.5px;
+    padding-right: 0px;
 }
 
-.tweets-list {
+#tweets-list {
     height: 700px;
+    min-height: 700px;
     padding-top: 0px;
-    padding-bottom: 15px;
-    padding-right: 10px;
-    padding-left: 10px;
+    padding-bottom: 0px;
+    padding-right: 0px;
+    padding-left: 15px;
     overflow: auto;
+    /* position: absolute; */
+}
+
+.fixed {
+    background-color: #e6ecf0;
+    position: sticky;
+    padding-bottom: 2.25px;
+    top: 0px;
 }
 
 .white-container {
@@ -120,9 +133,10 @@ li {
     background-color: #fff;
     line-height: 1.2;
     padding: 20px 20px;
+
 }
 
-#tweet-text {
+.tweet-text {
     /* border: 1px solid #e0245e; */
     padding-top: 0px;
     padding-bottom: 10px;
@@ -130,17 +144,14 @@ li {
     padding-right: 10px;
 }
 
-#date {
+.date {
     color: #657786;
-}
-
-.icons {
-    padding-top: 10px;
 }
 
 .icon {
     display: inline-block;
     padding-right: 5px;
+    margin-top: 10px;
 }
 
 .fav {
