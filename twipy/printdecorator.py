@@ -3,11 +3,11 @@ import json
 
 
 def print_params(param_name: str):
-    # requestのパラメータを設定 + パラメータの中身を出力する関数にデコレート
+    """Output logs of API parameters config"""
     def _print_params(func):
         def wrapper(*args, **kwargs):
             param = func(*args, **kwargs)
-            # print
+            # output
             print('current {} param'.format(param_name))
             for key, value in param.items():
                 print('{}: {}'.format(key, value))
@@ -19,22 +19,24 @@ def print_params(param_name: str):
 
 
 def print_status_code(http_method: str, api: str):
-    # responseを返す + ステータスコードを出力をする関数にデコレート
+    """
+    Output logs of  response-obj's status_code
+    and if a request was failed, return msg(str-type) not JSON-parsed obj.
+    """
     def _print_status_code(func):
         def wrapper(*args, **kwargs):
             response = func(*args, **kwargs)
             status_code = response.status_code
-            header = response.headers
 
-            # status_code log
+            # log: status_code
             print('----- {} -----'.format(api))
+            result = 'succeed' if (status_code == 200) else 'failed'
+            msg = f'{http_method} {result}\nHTTP status code: {status_code}\n'
+            print(msg)
             if status_code == 200:
-                print('{} succeed'.format(http_method))
-                print('HTTP status code: {}\n'.format(response.status_code))
+                return json.loads(response.text)  # dict-type
             else:
-                print('{} failed'.format(http_method))
-                print('HTTP status code: {}\n'.format(response.status_code))
+                return msg  # str-type
 
-            return response
         return wrapper
     return _print_status_code

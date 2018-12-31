@@ -2,12 +2,12 @@
 from requests_oauthlib import OAuth1Session
 from datetime import datetime
 import pandas as pd
+import os
 import json
 import random
 
-import twipy.config as config
-import twipy.printdecorator as printdecorator
-#import sys; sys.path.append('twipy')
+# twipy
+from twipy import printdecorator
 
 
 class TwitterAPI:
@@ -20,7 +20,7 @@ class TwitterAPI:
             resource_owner_secret=access_secret
         )
 
-        # response object
+        # response object(MUST USE after request method)
         self.response = None
         self.limit_response = None
         self.resources = None  # limit resources: dic
@@ -30,15 +30,6 @@ class TwitterAPI:
         self.home_timeline_params = self.set_home_timeline_params()
         self.user_timeline_params = self.set_user_timeline_params()
         self.rate_limit_params = self.set_rate_limit_params()
-
-        # paging params
-        self.columns = [
-            'id',
-            'created_at',
-            'text',
-            'favorite_count',
-            'retweet_count'
-        ]
 
     # GET method
     # search
@@ -109,6 +100,7 @@ class TwitterAPI:
         for key, value in kwargs.items():
             search_params[key] = value
 
+        self.search_params = search_params
         return search_params
 
     # home_timeline params
@@ -130,6 +122,7 @@ class TwitterAPI:
         for key, value in kwargs.items():
             home_timeline_params[key] = value
 
+        self.home_timeline_params = home_timeline_params
         return home_timeline_params
 
     # user_timeline params
@@ -139,19 +132,8 @@ class TwitterAPI:
         exclude_replies=True, contributor_details=True, include_rts=True, **kwargs
     ) -> dict:
         """set user_timeline parameters
-
-        Keyword Arguments:
-            screen_name {str} -- [description] (default: {'never_be_a_pm'})
-            count {int} -- [description] (default: {3200})
-            trim_user {bool} -- [description] (default: {True})
-            exclude_replies {bool} -- [description] (default: {True})
-            contributor_details {bool} -- [description] (default: {True})
-            include_rts {bool} -- [description] (default: {True})
-
-        allowed params: allowed_param:'id', 'user_id', 'screen_name', 'since_id', 'max_id', 'count', 'include_rts', 'trim_user', 'exclude_replies'
-
-        Returns:
-            dict -- [description]
+        reference: https: // dev.twitter.com/rest/reference/get/statuses/user_timeline
+        allowed_param: 'id', 'user_id', 'screen_name', 'since_id', 'max_id', 'count', 'include_rts', 'trim_user', 'exclude_replies'
         """
 
         user_timeline_params = {
@@ -167,12 +149,14 @@ class TwitterAPI:
         for key, value in kwargs.items():
             user_timeline_params[key] = value
 
+        self.user_timeline_params = user_timeline_params
         return user_timeline_params
 
     # rate_limit_status params
     @printdecorator.print_params(param_name='rate_limit_status')
     def set_rate_limit_params(self, resources='user,search,statuses') -> dict:
         rate_limit_params = {'resources': resources}
+        self.rate_limit_params = rate_limit_params
         return rate_limit_params
 
     # print GET result
@@ -251,23 +235,17 @@ class TwitterAPI:
         else:  # tweet failed
             print('Tweet Failed. : {}'.format(response.status_code))
 
-    # others
-    def limit(self):
-        limit = res.headers['x-rate-limit-remaining']  # リクエスト可能残数の取得
-        reset = res.headers['x-rate-limit-reset']  # リクエスト叶残数リセットまでの時間(UTC)
-        # sec = int(res.headers['X-Rate-Limit-Reset']) - time.mktime(datetime.now().timetuple()) #UTCを秒数に変換
-
 
 if __name__ == '__main__':
-    # test
     api = TwitterAPI(
-        consumer_key=config.CONSUMER_KEY,
-        consumer_secret=config.CONSUMER_SECRET,
-        access_token=config.ACCESS_TOKEN,
-        access_secret=config.ACCESS_SECRET
+        consumer_key=os.environ['TW_CONSUMER_KEY'],
+        consumer_secret=os.environ['TW_CONSUMER_SECRET'],
+        access_token=os.environ['TW_ACCESS_TOKEN'],
+        access_secret=os.environ['TW_ACCESS_SECRET'],
     )
 
     # api.search_tweets()
     # api.home_timeline()
-    res = api.user_timeline()
     # api.tweet(tw_sentence='私は会社に行きたくないです')# api.tweet(tw_sentence='私は会社に行きたくないです')
+    tweets = api.user_timeline()  # list
+    tweet = tweets[0]  # dict

@@ -5,76 +5,324 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TopTweets</title>
-    <link rel="stylesheet" href="../static/css/stylesheet.css">
+    <title>TwiStats</title>
 
-    <!-- ここがBootstrapのCDN -->
+    <!-- CSS -->
+    <!-- <link rel="stylesheet" href="https://rawgit.com/filipelinhares/ress/master/dist/ress.min.css"> -->
+    <!-- for Deploy <link rel="stylesheet" href="https://cdn.rawgit.com/filipelinhares/ress/master/dist/ress.min.css"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pc_tablet.css') }}" media="screen and (min-width: 500px)">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sp.css') }}" media="screen and (max-width: 499px)">
+
+    <!-- BokehJS link -->
+    <link href="https://cdn.pydata.org/bokeh/release/bokeh-1.0.2.min.css" rel="stylesheet" type="text/css">
+
+    <!-- fontawesome -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='fontawesome-free-5.5.0-web/css/all.min.css') }}">
+
+    <!-- Bootstrap CDN -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
     <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>;;
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>;;
     <![endif]-->
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-125089892-2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+        gtag('config', 'UA-125089892-2');
+    </script>
+
+    <style>
+        body {
+            background-color: #e6ecf0;
+            font-family: -apple-system,
+                        BlinkMacSystemFont,
+                        "Helvetica Neue",
+                        "游ゴシック Medium",
+                        YuGothic,
+                        YuGothicM,
+                        "Hiragino Kaku Gothic ProN",
+                        メイリオ,
+                        Meiryo,
+                        sans-serif
+        }
+
+    </style>
 </head>
 
-<body>
-    <div class="container">
+<body onload="get_size();">
+    <div class="container-fluid">
         <!-- row-1 top -->
         <div class="row">
             <div class="col-md-12">
-                <!-- title-container -->
-                <div class="title-container">
-                    <h1><a href="/">TopTweets</a></h1>
-                    <p>TwitterIDを入れると、直近のいいね数とリツイート数、もっともリツイートされたツイートが一覧できます。</p>
+                <div class="top">
+                    <!-- title-container -->
+                    <div class="title-container">
+                        <h1 id="title">
+                            <a href="/">TwiStats</a>
+                        </h1>
+                        <p class="top-text">Enter Twitter ID you wanna check!</p>
+                    </div>
+                    <!-- form-container -->
+                    <div class="form-container">
+                        <form class="form-inline" method="post">
+                            <label>
+                                <div class="input-group">
+                                    <span class="input-group-addon">@</span>
+                                    {% if user_id %}
+                                    <input name="user_id" class="use-id form-control" type="text" value="{{ user_id }}"
+                                        placeholder="Enter Twitter ID" style="font-size: 16px; width: 225px;">
+                                    {% else %}
+                                    <input name="user_id" class="use-id form-control" type="text" value="" placeholder="Enter Twitter ID"
+                                        style="font-size: 16px; width: 225px;">
+                                    {% endif %}
+                                    <button type="submit" class="btn btn-primary"><span style="font-weight: bold;">GET</span></button>
+                                </div>
+                            </label>
+                        </form>
+                    </div>
+
+                    <p class="top-text">
+                        Your search ID:
+                        {% if error_msg %}
+                        <span style="color: red;">{{ error_msg }}</span>
+                        {% else %}
+                        <span>{{ user_id }} {{ not_found }}</span>
+                        {% endif %}
+                    </p>
                 </div>
-                <!-- form-container -->
-                {% if user_id %}
-                <p>{{ user_id }}</p>
-                {% endif %}
-                <div class="form-container">
-                    <form class="form-inline" method="post">
-                        <label>
-                            <div class="input-group">
-                                <span class="input-group-addon">@</span>
-                                <input name="user_id" class="form-control" type="text" value="" placeholder="ここにTwitterIDを入力してください">
+            </div>
+        </div>
+
+        <!-- row-2 -->
+        <div class="row">
+            <div id="all">
+                {% if profile %}
+                <!-- profile -->
+                <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-6 col-xs-12">
+                            <div id="user-info">
+                                <img id="user_img" src="{{ profile.image }}" width="60px">
+                                <div id="name-id">
+                                    <span id="name">{{ profile.name }}</span> <br>
+                                    <a id="id" href="https://twitter.com/{{ profile.user_id }}" target="_blank">
+                                        @{{profile.user_id }}
+                                    </a>
+                                </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">取得する</button>
-                        </label>
-                    </form>
+                            <div class="row" id="ff-summary">
+                                <div class="col-md-4 col-sm-3 col-xs-2 ff-col">
+                                    <div class="ff">
+                                        <span class="ff-text">Following</span><br />
+                                        <span class="ff-num">{{ profile.friends_count }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-3 col-xs-2 ff-col">
+                                    <div class="ff">
+                                        <span class="ff-text">Followers</span><br />
+                                        <span class="ff-num">{{ profile.followers_count }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div id="description" class="col-md-12 col-sm-12 col-xs-6">
+                                    {{ profile.description }} <br />
+                                    {% if profile.expanded_url %}
+                                    <i class="fas fa-link" style="color: #98a0a5;"> </i>
+                                    <a href="{{ profile.expanded_url }}" target="_blank">{{ profile.user_id }}'s WEB
+                                        page</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- summary table -->
+                        <div class="col-md-12 col-sm-6 col-xs-12">
+                            <div class="summary">
+                                <h4 id="stats-title">{{ profile.user_id }}'s Stats</h4>
+                                <span>Period: {{ day_grouped_df.index.min() }} ~ {{ day_grouped_df.index.max()}}</span><br />
+                                <span>Target: {{ sorted_df.shape[0] }} tweets</span>
+                                <!-- per Tweet -->
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Stats</th>
+                                            <th scope="col"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">Most Favorited / Tweet</th>
+                                            <td>{{ summary['max_fav'] }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Most Retweeted / Tweet</th>
+                                            <td>{{ summary['max_rt'] }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="col">Tweets / day</th>
+                                            <td>{{ summary['ave_tweets'] | round(1, 'floor') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="col">Max Tweets / day</th>
+                                            <td>{{ summary['max_tweets'] }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="col">Most Tweeted on (weekday)</th>
+                                            <td>{{ summary['weekday'] }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="col">Most Tweeted at (24h-clock)</th>
+                                            <td>{{ summary['period'] }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="col">Characters / Tweet (not include URL)</th>
+                                            <td>{{ summary['length'] | round(1, 'floor') }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <!-- row-2 chart -->
-        <div class="row">
 
-        </div>
-        <!-- row-3 profile(md-4) & list(md-8) -->
-        <div class="row">
-            <div class="col-md-4">
-                {{% if profile %}}
-                <div class="white-container">
-                    <div>
-                        <img src="{{ profile.image }}" width="100px"><br />
-                        <a href="https://twitter.com/{{ profile.user_id }}">@{{ profile.user_id }}</a><br />
-                        follow: {{ profile.friends_count }} <br />
-                        followers: {{ profile.followers_count }}
+
+                <!-- chart -->
+                <div class="col-lg-9 col-md-8 col-sm-12 col-xs-12" id="chart">
+                    <div class="bokeh" style="min-width: 350px; min-height:300px;">
+                        {% if script %}
+                        {{ script | safe }}
+                        {{ div | safe }}
+                        {% endif %}
                     </div>
-                    <div>
-                        {{ profile.description }} <br />
-                        <a href="{{ profile.expanded_url }}">{{ profile.user_id }}'s page</a>
+                    <!-- download -->
+                    <div class="dropdown pull-right download">
+                        <button class="btn-sm btn-primary dropdown-toggle" id="down-button" type="button" data-toggle="dropdown">
+                            <span style="font-weight: bold;">Download CSV</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a href="/tweets_csv">individual tweets data</a></li>
+                            <li><a href="/day_grouped_csv">day-grouped data</a></li>
+                        </ul>
                     </div>
                 </div>
-                {{% endif %}}
-            </div>
-            <div class="col-md-8">
-                <h2>col8</h2>
+
+                <!-- list(col-md-8) -->
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 list">
+                    <div class="center-block">
+                        <div>
+                            <span class="list-title">{{ sorted_df.shape[0] }} Tweets sorted by</span>
+                        </div>
+                        <div id="tweets-list">
+                            <div class="fixed">
+                                <input id="keyword" class="search" placeholder=" Search Tweets" oninput="num_search()" />
+                                <span class="search-result"> Hit Tweets: </span><span class="search-result" id="num-search"></span>
+                                <div class="btn-group pull-left" role="group" aria-label="sort-button" style="padding-right: 10px;">
+                                    <button type="button" class="sort btn-primary btn sort-button" data-sort="fav">
+                                        <span>Favorite</span>
+                                    </button>
+                                    <button type="button" class="sort btn-primary btn sort-button" data-sort="rt">
+                                        <span>Retweet</span>
+                                    </button>
+                                    <button type="button" class="sort btn-primary btn sort-button" data-sort="datehide">
+                                        <span>Date</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <ul class="list">
+                                {% for index, row in sorted_df.iterrows() %}
+                                <li class="white-container" data-id="{{ index }}">
+                                    <div class="tweet-text">
+                                        {{ row.text }}
+                                    </div>
+                                    <div class="date">
+                                        {{ row.created_at | dt_filter }}
+                                    </div>
+                                    <div class="datehide hide">
+                                        {{ row.created_at.timestamp() | int }}
+                                    </div>
+                                    <span class="fav">
+                                        <i class="fas fa-heart icon"></i>{{ row.favorite_count }}
+                                    </span>
+                                    <span class="rt">
+                                        <i class="fas fa-retweet icon"></i>{{ row.retweet_count }}
+                                    </span>
+                                    <a href="https://twitter.com/{{ profile.user_id }}/status/{{ row.id }}" target="_blank"
+                                        class="view-tweet pull-right">View Tweet</a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
+
+        <!-- footer -->
+        <div class="row">
+            <div class="col-md-12 col-xs-12 footer">
+                <span id="footer-text">Created by <a href="https://twitter.com/mathnuko" style="color: inherit;">@mathnuko</a></span>
+                <span class="twitter footer-icon">
+                    <a href="https://twitter.com/mathnuko" target="_blank"><i class="fab fa-twitter fa-2x"></i></a>
+                </span>
+                <span class="github footer-icon">
+                    <a href="https://github.com/nukopy" target="_blank"> <i class="fab fa-github fa-2x"></i></a>
+                </span>
+            </div>
+        </div>
+
+        <!-- CDNs -->
+        <!-- Bootstrap CDN -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+
+        <!-- BokehJS script -->
+        <script src="https://cdn.pydata.org/bokeh/release/bokeh-1.0.2.min.js"></script>
+
+        <!-- List.js -->
+        <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+        <script>
+            let options = {
+                valueNames: [
+                    'tweet-text',
+                    'datehide',
+                    'fav',
+                    'rt',
+                    {
+                        data: ['id']
+                    }
+                ]
+            };
+            let tweet_list = new List('tweets-list', options);
+
+            let num_search = () => {
+                keyword = document.getElementById('keyword').value
+                document.getElementById('num-search').textContent = tweet_list.search(keyword).length;
+            };
+
+            let get_size = () => {
+                //windowの幅をxに代入
+                var x = $(window).width();
+                //windowの分岐幅をyに代入
+                var y = 499;
+                if (x <= y) {
+                    $('.ff-col').removeClass('col-xs-2').addClass('col-xs-5');
+                    $('#description').removeClass('col-xs-6').removeClass('col-xs-12');
+                    $('#down-button').removeClass('btn-sm').removeClass('btn-xs');
+                    $('.pull-right').removeClass('pull-left')
+                    $('.pull-left').removeClass('pull-left')
+                    $('.sort-button').addClass('btn-xs')
+                }
+            };
+        </script>
     </div>
-
-    <!-- ここがBootstrapのCDN -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <!-- ここがBootstrapのCDN -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
 </body>
 
 </html>

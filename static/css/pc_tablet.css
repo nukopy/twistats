@@ -1,0 +1,234 @@
+/* all */
+ul {
+    padding: 0;
+}
+
+li {
+    list-style-type: none;
+    padding: 0;
+}
+
+/* container */
+/* top */
+.top {
+    padding-left: 30px;
+}
+
+.title {
+    font-size: 40px;
+}
+
+/* .user-id {
+    font-size: 16px;
+    width: 225px;
+} */
+
+.top-text {
+    font-size: 18px;
+}
+
+/* profile */
+#all {
+    padding: 0 30px;
+}
+
+#user-info {
+    display: flex;
+    display: -webkit-flex;
+    /* 縦方向中央揃え（Safari用） */
+    -webkit-align-items: center;
+    /* 縦方向中央揃え */
+    align-items: center;
+    padding-left: 10px;
+    padding-top: 27.5px;
+}
+
+#user_img {
+    border-radius: 50px;
+    display: inline;
+    width: 60px;
+    padding: 5px 5px;
+}
+
+#name-id {
+    display: inline-block;
+    padding: 5px 5px;
+}
+
+#name {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+#id {
+    font-size: 15px;
+    color: #98a0a5;
+}
+
+#ff-summary {
+    padding: 5px 0;
+}
+
+.ff {
+    display: inline-block;
+    text-align: center;
+    width: 50%;
+}
+
+.ff-text {
+    color: #657786;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.ff-num {
+    color: #428bca;
+    /* Twitter-HP #1da1f2; */
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.summary {
+    padding-top: 10px;
+}
+
+td {
+    font-size: 18x;
+}
+
+#chart {
+    padding-top: 10px;
+    padding-bottom: 15px;
+    padding-left: 10px;
+    padding-right: 7.5px;
+}
+
+.download {
+    padding-right: 5px;
+}
+
+/* list */
+.list {
+    /* border: 1px solid #e0245e; */
+    padding-top: 0px;
+    padding-bottom: 30px;
+    padding-left: 0px;
+    padding-right: 20px;
+}
+
+/* list: tweets-list */
+.list-title {
+    color: #657786;
+    display: inline-block;
+    font-size: 18px;
+    font-weight: bold;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 17.5px;
+    padding-right: 0px;
+}
+
+#keyword {
+    padding: 3px 0;
+    margin-top: 1px;
+    margin-bottom: 3px;
+    border-radius: 5px;
+    font-size: 17.5px;
+}
+
+#tweets-list {
+    height: 700px;
+    min-height: 700px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-right: 0px;
+    padding-left: 15px;
+    overflow: auto;
+    /* position: absolute; */
+}
+
+.search-result {
+    font-size: 17.5px;
+}
+
+.sort-button {
+    font-weight: bold;
+    display: inline-block;
+}
+
+.fixed {
+    background-color: #e6ecf0;
+    position: sticky;
+    padding-bottom: 2.25px;
+    top: 0px;
+}
+
+.white-container {
+    border-bottom: 2px solid #e6ecf0;
+    background-color: #fff;
+    line-height: 1.2;
+    padding: 20px 20px;
+
+}
+
+.tweet-text {
+    /* border: 1px solid #e0245e; */
+    font-family: 'Hiragino Kaku Gothic ProN';
+    font-size: 15px;
+    line-height: 20px;
+    padding-top: 0px;
+    padding-bottom: 10px;
+    padding-left: 0px;
+    padding-right: 10px;
+}
+
+.date {
+    color: #657786;
+}
+
+.icon {
+    display: inline-block;
+    padding-right: 5px;
+    margin-top: 10px;
+}
+
+.fav {
+    font-weight: bold;
+    display: inline-block;
+    color: #e0245e;
+    padding-right: 7.5px;
+}
+
+.rt {
+    font-weight: bold;
+    display: inline-block;
+    color: #17bf63;
+}
+
+/* row-4 footer */
+.footer {
+    background-color: rgba(66, 139, 202, 0.65);
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    height: 70px;
+    text-align: center;
+    margin-top: 30px;
+}
+
+#footer-text {
+    display: inline-block;
+    line-height: 70px;
+    padding-left: 15px;
+}
+
+.footer-icon {
+    display: inline-block;
+    font-size: 10px;
+    padding: 22.5px 0;
+}
+
+.twitter {
+    padding-left: 8px;
+    padding-right: 5px;
+}
