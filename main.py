@@ -1,6 +1,5 @@
-# TopTweets
+# TwiStats
 from flask import Flask, render_template, request, send_file
-from configparser import ConfigParser
 import pandas as pd
 import datetime
 import re
@@ -24,6 +23,7 @@ api = Cursor(
 def index():
     if request.method == 'POST':
         user_id = request.form['user_id']
+        # space separated query is rejected.
         if user_id != '' and not (2 <= len(user_id.split(' '))):
             tweets_df = api.get_tweets_df(
                 screen_name=user_id)  # update self.tweets_df
@@ -69,6 +69,12 @@ def index():
                     sorted_df=sorted_df,
                     summary=summary
                 )
+            elif api.limit_response.status_code == 429:
+                return render_template(
+                    'index.html',
+                    user_id=user_id,
+                    error_msg='ERROR: API Rate Limit exceeded. Please visit after 15 min after.'
+                )
             else:
                 return render_template(
                     'index.html',
@@ -95,7 +101,7 @@ def index():
 def tweets_csv():
     df = api.tweets_df
     df = df.drop(['id'], axis=1)
-    df.to_csv('outputs/tweets.csv', encoding='utf-8')
+    df.to_csv('outputs/tweets.csv', encoding='utf-8', index=False)
     return send_file(
         'outputs/tweets.csv',
         mimetype='text/csv',
@@ -117,7 +123,7 @@ def day_grouped_csv():
     )
 
 
-def text_length(text: str):
+def text_length(text: str) -> int:
     # numbers of characters
     sub = re.sub(pattern, '', text)
     sub = re.sub('\s', '', sub)
@@ -136,4 +142,5 @@ pattern = re.compile('https?://[\w./]+\s?')
 
 
 if __name__ == '__main__':
-    app.run(host='localhost', debug=True)
+    port = os.environ.get('PORT', '5000')
+    app.run(host='0.0.0.0', port=int(port), debug=True)

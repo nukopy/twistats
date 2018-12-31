@@ -7,3 +7,5 @@ others
 # file
 config.py
 config.ini
+heroku.config
+heroku_config.sh
